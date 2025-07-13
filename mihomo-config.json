@@ -304,7 +304,7 @@
         "RULE-SET,iran_other,DIRECT",
         "RULE-SET,apps,DIRECT",
         "DOMAIN,graph.facebook.com,Smart VPN",//چون این دامنه توی رول واتساپ خورده دایرکت بشه اینجا بالاتر از رول واتساپ میزنیم که به هر حال از پروکسی استفاده کنه و اینستا و فیسبوک درست کار کنن//
-        "RULE-SET,whatsapp,WhatsApp",//اینجا هم مشخص میکیم سر رولست واتساپ بلایی بیاره که ما بالاتر گفتیم//
+        "RULE-SET,whatsapp,WhatsApp",//اینجا هم مشخص میکنیم سر رولست واتساپ بلایی بیاره که ما بالاتر گفتیم//
         "RULE-SET,openai,ChatGPT",
         "MATCH,Smart VPN"
     ]
