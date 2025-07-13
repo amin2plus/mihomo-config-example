@@ -1,0 +1,311 @@
+{
+    "allow-lan":true,
+    "mode":"rule",
+    "mixed-port":7890,
+    "log-level":"silent",//لاگ رو خاموش کردیم تا مصرف باتری کم بشه اگه مشکل دارین روشن کنید//
+    "ipv6":false,
+    "enable-process":true,
+    "find-process-mode":"strict",
+    "tcp-concurrent":true,
+    "profile":{
+        "store-selected":true,
+        "store-fake-ip":true
+    },
+    "sniffer":{
+        "enable":true,
+        "parse-pure-ip":true,
+        "force-dns-mapping":true,
+        "override-destination":false
+    },
+    "dns":{
+        "enable":true,
+        "listen":"0.0.0.0:1053",
+        "ipv6":false,
+        "respect-rules":true,
+        "use-system-hosts":false,
+        "enhanced-mode":"fake-ip",//با ساخت آیپی دروغین به درخواست های دی-ان-اس سرعت میبخشه//
+        "fake-ip-range":"198.18.0.1/16",
+        "fake-ip-filter-mode":"blacklist",
+        "fake-ip-filter":[
+            "rule-set:private"//از فیک آیپی برای این رول استفاده نشده چون نیازی نیست//
+        ],
+        "default-nameserver":[//این لیست برای ریزالو لیست های پایینتر استفاده میشه و فقط میشه آیپپی 4ای گذاشت//
+            "8.8.8.8",//اینم سینگباکس نداره و لیست نمیشه داد//
+            "8.8.4.4"
+        ],
+        "nameserver":[//این لیست پیشفرض هست و استفاده نمیشه ولی میذاریمش تا با برنامه های مختلف هم بخوبی کار کنه//
+            "4.2.2.4",
+            "1.1.1.1"
+        ],
+        "direct-nameserver":[//این لیست برای کانکشنهای دایرکت استفاده میشه//
+            "8.8.8.8",
+            "8.8.4.4"
+        ],
+        "proxy-server-nameserver":[//این لیست برای کانکشن های پروکسی استفاده میشه و اگه فیل بشه از لیست پایین استفاده میشه//
+            "4.2.2.4",
+            "1.1.1.1"
+        ],
+        "fallback":[//این لیست زمانی که درخواست دی-ان-اس توسط زیرساخت دستکاری بشه استفاده میشه//
+            "quic://8.8.8.8",//این لیست فعکر نکنم کار کنه دی-او-اچ درست حسابی بذارین اینجا//
+            "quic://8.8.4.4",
+            "https://google.com/dns-query",
+            "https://8.8.8.8/dns-query"
+        ],
+        "fallback-filter":{//اینو سینگباکس نداره//
+            "ipcidr":[
+                "10.10.34.34/29"//آی پی رنج فیلترینگ رو میدیم اینجا که اگر در جواب دی-ان-اس این پاسخ امد بره از لیست فالبک استفاده بشه//
+            ]
+        }
+    },
+    "tun":{
+        "enable":true,
+        "stack":"gvisor",//سیستم از همه کم مصرف تره ولی روی جی-وایزور دستگاه های بیشتری بدون باگ کار میکنند//
+        "auto-route":true,
+        "auto-redirect":true,
+        "strict-route":true,
+        "dns-hijack":[
+            "any:53",
+            "tcp://any:53"
+        ]
+    },
+    "proxies":[// آموزش https://wiki.metacubex.one/en/config/proxies //
+        {
+            "name":"proxy1",
+            "..."//بادی پروکسی//
+        },
+        {
+            "name":"proxy2",
+            "..."//بادی پروکسی//
+        },
+        {
+            "name":"proxy3",
+            "..."//بادی پروکسی//
+        }
+    ],
+    "proxy-providers":{//اینم سینگباکس نداره//
+        "bpb":{
+            "type":"http",
+            "url":"https://bpb-sub.com",//میتونید لینک ساب کلش بدید و بگین بره هرچی کانفیگ هست رو ازین لینک در بیاره//
+            "path":"./providers/bpb.yaml",
+            "health-check":{
+                "enable":true,
+                "interval":3600,
+                "timeout":1000,
+                "lazy":true,//تا لازم نشه پینگ نمیگیره و مصرف باتری میاد پایین//
+                "expected-status":204,
+                "url":"https://www.youtube.com/generate_204"
+            }
+        }
+    },
+    "proxy-groups":[
+        {
+            "name":"Smart VPN",
+            "type":"select",
+            "lazy":true,
+            "icon":"https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png",//حتی میشه برای رول ست آیکن بذارین آخه جذابتر از این؟ //
+            "proxies":[
+                "Auto",
+                "Load Balancer",
+                "proxy1",
+                "proxy2",
+                "proxy3",
+                "Backup-bpb"
+            ]
+        },
+        {
+            "name":"WhatsApp",//میتونید رول بذارین که مثلا برای واتساپ از چیزی که میخواید استفاده کنه//
+            "type":"select",//گزینه سلکت انتخابیه و خودتون انتخاب میکنید، پیشفرض به اولی وصل میشه اگه کار کنه//
+            "lazy":true,
+            "hidden":false,
+            "icon":"https://cdn.jsdelivr.net/gh/lige47/QuanX-icon-rule@main/icon/whatsapp(1).png",
+            "proxies":[
+                "Smart VPN",
+                "DIRECT"
+            ]
+        },
+        {
+            "name":"ChatGPT",//میتونید رول بذارین که مثلا برای چت جی بی تی از چیزی که میخواید استفاده کنه//
+            "type":"select",
+            "lazy":true,
+            "hidden":false,
+            "icon":"https://cdn.jsdelivr.net/gh/lige47/QuanX-icon-rule@main/icon/ChatGPT-green.png",
+            "proxies":[
+                "Smart VPN",
+                "DIRECT"
+            ]
+        },
+        {
+            "name":"Auto",
+            "type":"url-test",//تست میگیره از لینک زیر و بهترین رو انتخاب میکنه//
+            "icon":"https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/EU.png",
+            "url":"http://gstatic.com/generate_204",
+            "lazy":true,
+            "interval":120,
+            "tolerance":200,
+            "hidden":true,
+            "proxies":[
+                "proxy1",
+                "proxy2",
+                "proxy3",
+                "Backup-bpb"
+            ]
+        },
+        {
+            "name":"Load Balancer",//اینو سینگباکس نداره و با تقسیم ترافیک باعث میشه کمتر مشکوک باشید//
+            "type":"load-balance",//ترافیک رو تقسیم میکنه بین تمام این کانفیگ های پایین و همزمان ترافیکتون تقسیم میشه به چند سرور//
+            "strategy":"consistent-hashing",//رعایت میکنه که یک برنامه به یک پروکسی وصل بشه و کانکشنش پخش نشه بین چند سرور//
+            "icon":"https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bypass.png",
+            "url":"http://gstatic.com/generate_204",
+            "lazy":true,
+            "interval":120,
+            "tolerance":200,
+            "hidden":true,
+            "proxies":[
+                "proxy1",
+                "proxy2",
+                "proxy3"
+            ]
+        },
+        {
+            "name":"Backup-bpb",//اسم میذاریم برای کانفیگ هایی که از ساب بیاپاین بچه میگیریم//
+            "type":"url-test",
+            "icon":"https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Server.png",
+            "url":"http://gstatic.com/generate_204",
+            "lazy":true,
+            "interval":60,
+            "tolerance":200,
+            "timeout":1000,
+            "hidden":false,
+            "exclude-filter":"Domain|IPv4",//اون کانفیگ هایی که تو اسمشون این دو متن هست رو بیخیال بشه و نشون نده//
+            "use":[
+                "bpb"//برای این رول از تعمین کننده بیاپایین بچه استفاده کنه//
+            ]
+        }
+    ],
+    "rule-providers":{
+        "private":{
+            "type":"http",
+            "format":"text",
+            "behavior":"ipcidr",//اینو که میزنیم فقط آی پی هایی که توی رول ست هست رو برمیداره//
+            "url":"https://github.com/Chocolate4U/Iran-clash-rules/releases/latest/download/private.txt",
+            "path":"./ruleset/private.txt",
+            "interval":86400
+        },
+        "ircidr":{
+            "type":"http",
+            "format":"text",
+            "behavior":"ipcidr",
+            "url":"https://github.com/Chocolate4U/Iran-clash-rules/releases/latest/download/ircidr.txt",
+            "path":"./ruleset/ircidr.txt",
+            "interval":86400
+        },
+        "iran_other":{
+            "type":"http",
+            "format":"text",
+            "behavior":"domain",//اینو که میزنیم فقط دامنه هایی که رول ست هست رو برمیداره//
+            "url":"https://github.com/bootmortis/iran-hosted-domains/releases/latest/download/clash_rules_other.txt",
+            "path":"./ruleset/iran_other.txt",
+            "interval":86400
+        },
+        "apps":{//این لست پروسس برنامه های اندرویدی ایرانی هست که بزنید همه با هم دایرکت بشن//
+            "type":"http",
+            "format":"text",
+            "behavior":"classical",//هر مدل رول داخل لینک باشه رو برمیداره//
+            "url":"https://github.com/Chocolate4U/Iran-clash-rules/releases/latest/download/apps.txt",
+            "path":"./ruleset/apps.txt",
+            "interval":86400
+        },
+        "whatsapp":{
+            "type":"http",
+            "format":"text",
+            "behavior":"classical",
+            "url":"https://github.com/blackmatrix7/ios_rule_script/raw/refs/heads/master/rule/Clash/Whatsapp/Whatsapp.list",
+            "path":"./ruleset/whatsapp.txt",
+            "interval":86400
+        },
+        "openai":{
+            "type":"http",
+            "format":"yaml",
+            "behavior":"domain",
+            "url":"https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/openai.yaml",
+            "path":"./ruleset/openai.txt",
+            "interval":86400
+        },
+        "Pro":{
+            "type":"http",
+            "format":"text",
+            "behavior":"domain",
+            "url":"https://github.com/Chocolate4U/Iran-clash-rules/releases/latest/download/nsfw.txt",
+            "path":"./ruleset/pro.txt",
+            "interval":86400
+        },
+        "ads":{
+            "type":"http",
+            "format":"text",
+            "behavior":"domain",
+            "url":"https://github.com/Chocolate4U/Iran-clash-rules/releases/latest/download/category-ads-all.txt",
+            "path":"./ruleset/ads.txt",
+            "interval":86400
+        },
+        "malware":{
+            "type":"http",
+            "format":"text",
+            "behavior":"domain",
+            "url":"https://github.com/Chocolate4U/Iran-clash-rules/releases/latest/download/malware.txt",
+            "path":"./ruleset/malware.txt",
+            "interval":86400
+        },
+        "phishing":{
+            "type":"http",
+            "format":"text",
+            "behavior":"domain",
+            "url":"https://github.com/Chocolate4U/Iran-clash-rules/releases/latest/download/phishing.txt",
+            "path":"./ruleset/phishing.txt",
+            "interval":86400
+        },
+        "cryptominers":{
+            "type":"http",
+            "format":"text",
+            "behavior":"domain",
+            "url":"https://github.com/Chocolate4U/Iran-clash-rules/releases/latest/download/cryptominers.txt",
+            "path":"./ruleset/cryptominers.txt",
+            "interval":86400
+        },
+        "malware-ip":{
+            "type":"http",
+            "format":"text",
+            "behavior":"ipcidr",
+            "url":"https://github.com/Chocolate4U/Iran-clash-rules/releases/latest/download/malware-ip.txt",
+            "path":"./ruleset/malware-ip.txt",
+            "interval":86400
+        },
+        "phishing-ip":{
+            "type":"http",
+            "format":"text",
+            "behavior":"ipcidr",
+            "url":"https://github.com/Chocolate4U/Iran-clash-rules/releases/latest/download/phishing-ip.txt",
+            "path":"./ruleset/phishing-ip.txt",
+            "interval":86400
+        }
+    },
+    "rules":[
+        "DOMAIN-SUFFIX,ir,DIRECT",//نمونه دایرکت کردن هر سایتی که تهش دات آی آر داره//
+        "DOMAIN,www.cloudflare.com,DIRECT",//دایرکت کردن خود دامنه کلادفلر تا برنامه های ایرانی نفهمن پروکسی استفاده میکنیم//
+        "PROCESS-NAME,com.google.android.gms.nearby,DIRECT", //نمونه اسم برنامه اندرویدی برای دایرکت شدن//
+        "PROCESS-NAME,OUTLOOK.EXE,DIRECT",//نمونه پروسس ویندوزی برای دایرکت شدن//
+        "RULE-SET,ads,REJECT",//نمونه بلاک کرد رول ست ای که بالاتر تعریف کردیم//
+        "RULE-SET,malware,REJECT",
+        "RULE-SET,malware-ip,REJECT",
+        "RULE-SET,phishing,REJECT",
+        "RULE-SET,phishing-ip,REJECT",
+        "RULE-SET,cryptominers,REJECT",
+        "RULE-SET,private,DIRECT",//نمونه دایرکت کردن رولست ای که بالاتر تعریف کردیم//
+        "RULE-SET,ircidr,DIRECT",
+        "RULE-SET,iran_other,DIRECT",
+        "RULE-SET,apps,DIRECT",
+        "DOMAIN,graph.facebook.com,Smart VPN",//چون این دامنه توی رول واتساپ خورده دایرکت بشه اینجا بالاتر از رول واتساپ میزنیم که به هر حال از پروکسی استفاده کنه و اینستا و فیسبوک درست کار کنن//
+        "RULE-SET,whatsapp,WhatsApp",//اینجا هم مشخص میکیم سر رولست واتساپ بلایی بیاره که ما بالاتر گفتیم//
+        "RULE-SET,openai,ChatGPT",
+        "MATCH,Smart VPN"
+    ]
+}
